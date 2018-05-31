@@ -1,3 +1,7 @@
+/*
+Calcular fecha  20180531 15:47 pm
+*/
+
 declare @bd varchar(50)
 set @bd = '20100601'
 
