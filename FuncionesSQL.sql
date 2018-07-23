@@ -1,5 +1,5 @@
 /*
-Calcular fecha  20180531 15:47 pm
+Calcular fecha / edad  20180531 15:47 pm
 */
 
 declare @bd varchar(50)
@@ -32,4 +32,22 @@ SELECT m.modulo, m.descripcion, r.descripcion, r.nombrereporte
 			) AS Emails
 
 FROM         modulo
+
+
+
+/*
+Verificar usuarios con conecciones activas en SQL
+*/
+
+SELECT 
+    DB_NAME(dbid) as DBName, 
+    COUNT(dbid) as NumberOfConnections,
+    loginame as LoginName
+FROM
+    sys.sysprocesses
+WHERE 
+    dbid > 0
+GROUP BY 
+    dbid, loginame
+;
 
