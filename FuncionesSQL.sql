@@ -51,3 +51,22 @@ GROUP BY
     dbid, loginame
 ;
 
+
+-- Limpiar Log de base de datos
+USE sig;  
+GO  
+-- Truncate the log by changing the database recovery model to SIMPLE.  
+ALTER DATABASE sig
+SET RECOVERY SIMPLE;  
+GO  
+-- Shrink the truncated log file to 1 MB.  
+DBCC SHRINKFILE (sig_log, 1);  
+GO  
+-- Reset the database recovery model.  
+ALTER DATABASE sig
+SET RECOVERY FULL;  
+GO 
+
+
+select * from sys.database_files;
+
