@@ -50,9 +50,11 @@ WHERE
 GROUP BY 
     dbid, loginame
 ;
+/*
+FIN Verificar usuarios con conecciones activas en SQL
+*/
 
-
--- Limpiar Log de base de datos
+/* Limpiar Log de base de datos*/
 USE sig;  
 GO  
 -- Truncate the log by changing the database recovery model to SIMPLE.  
@@ -69,4 +71,48 @@ GO
 
 
 select * from sys.database_files;
+/*FIN impiar Log de base de datos*/
 
+/* BUscar un string en toda la base de datos */
+DECLARE @resultados TABLE (columna nvarchar(370), valor nvarchar(3630))
+DECLARE @tabla nvarchar(256), @columna nvarchar(128), @cadenaBuscar nvarchar(110)
+SET  @tabla = ''
+SET @cadenaBuscar = QUOTENAME('%César%','''')
+ 
+WHILE @tabla IS NOT NULL
+    BEGIN
+        SET @columna = ''
+        SET @tabla =
+        (SELECT MIN(QUOTENAME(TABLE_SCHEMA) + '.' + QUOTENAME(TABLE_NAME)) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND QUOTENAME(TABLE_SCHEMA) + '.' + QUOTENAME(TABLE_NAME) > @tabla AND OBJECTPROPERTY(OBJECT_ID( QUOTENAME(TABLE_SCHEMA) + '.' + QUOTENAME(TABLE_NAME) ), 'IsMSShipped' ) = 0)
+        WHILE (@tabla IS NOT NULL) AND (@columna IS NOT NULL)
+            BEGIN
+                SET @columna = (SELECT MIN(QUOTENAME(COLUMN_NAME)) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = PARSENAME(@tabla, 2) AND TABLE_NAME = PARSENAME(@tabla, 1) AND DATA_TYPE IN ('char', 'varchar', 'nchar', 'nvarchar') AND QUOTENAME(COLUMN_NAME) > @columna)
+                IF @columna IS NOT NULL
+                    BEGIN
+                        INSERT INTO @resultados
+                        EXEC ( 'SELECT ''' + @tabla + '.' + @columna + ''', LEFT(' + @columna + ', 3630) FROM ' + @tabla + ' (NOLOCK) ' + ' WHERE ' + @columna + ' LIKE ' + @cadenaBuscar ) 
+                    END
+                END
+    END
+ 
+SELECT columna, valor FROM @resultados
+
+/* FIN BUscar un string en toda la base de datos */
+
+
+/*Buscar un string en todos SP*/
+declare @search varchar(50)
+SET @search = 'sp_SAFNO_InsertarSYM'
+
+SELECT 
+ROUTINE_NAME
+,ROUTINE_DEFINITION
+FROM 
+INFORMATION_SCHEMA.ROUTINES
+WHERE 
+ROUTINE_DEFINITION LIKE '%' + @search + '%'
+AND ROUTINE_TYPE ='PROCEDURE'
+ORDER BY
+ROUTINE_NAME
+
+/*FIN Buscar un string en todos SP*/
