@@ -54,6 +54,25 @@ GROUP BY
 FIN Verificar usuarios con conecciones activas en SQL
 */
 
+
+
+
+/*Eliminar connections de sql >= 2005*/
+
+USE [master];
+
+DECLARE @kill varchar(8000) = '';  
+SELECT @kill = @kill + 'kill ' + CONVERT(varchar(5), session_id) + ';'  
+FROM sys.dm_exec_sessions
+WHERE database_id  = db_id('ECMH_SA')
+
+EXEC(@kill);
+
+/*FIN Eliminar connections de sql >= 2005*/
+
+
+
+
 /* Limpiar Log de base de datos*/
 USE sig;  
 GO  
@@ -116,3 +135,7 @@ ORDER BY
 ROUTINE_NAME
 
 /*FIN Buscar un string en todos SP*/
+
+
+
+
