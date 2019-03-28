@@ -137,5 +137,10 @@ ROUTINE_NAME
 /*FIN Buscar un string en todos SP*/
 
 
+/*Reseed identity table TSQL*/
 
+DBCC CHECKIDENT ('exalumno.[exalumno]', RESEED, 4001)  
+
+/* FINReseed identity table TSQL*/					   
+					   
 
