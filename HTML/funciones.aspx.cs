@@ -42,3 +42,28 @@ class Test
         }
     }
 }
+
+
+
+// descargarlo luego de crearlo
+
+public void descargarPDF(string nombrePDF)
+    {
+        string pathPDF = HttpContext.Current.Server.MapPath("~/PDF/" + nombrePDF);
+        Response.Clear();
+        if (Path.GetExtension(pathPDF) == "txt")
+        {
+            Response.ContentType = "application/text";
+        }
+        else
+        {
+            Response.ContentType = "application/pdf";
+        }
+        
+        Response.AppendHeader("Content-Disposition", "attachment; filename=" + nombrePDF + "");
+        Response.TransmitFile(pathPDF);
+        Response.End();
+
+
+
+    }
