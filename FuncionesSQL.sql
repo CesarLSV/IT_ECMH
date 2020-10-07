@@ -181,4 +181,41 @@ DEALLOCATE db_cursor
 /*Fín Respaldar todas las bases de datos vía SQLCMD*/
 					
 					
+/*Pruebas de estress sqlServer*/
+DECLARE @i INT
+SET @i = 0
+ 
+WHILE (@i < 1000)
+BEGIN
+	-- Replace with your query
+	SELECT 
+		[City Key],
+		[Salesperson Key],
+		SUM(Quantity),
+		SUM([Total Including Tax])
+	FROM WideWorldImportersDW.Fact.OrderHistory
+	GROUP BY 
+	City Key,
+	[Salesperson Key]
+	--
+ 
+	SET @i = @i + 1
+END
 
+
+/*bat RunQuery.bat*/
+sqlcmd -S.\SQL19 -iQuery.sql -dWideWorldImportersDW
+/*FIN*/
+
+
+
+/*bat RunStress.bat*/
+START RunQuery.bat
+START RunQuery.bat
+START RunQuery.bat
+START RunQuery.bat
+START RunQuery.bat
+START RunQuery.bat
+/*FIN*/
+
+/*Fin pruebas estress*/
