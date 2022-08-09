@@ -378,3 +378,40 @@ exec usp_generateIdentifier
     , @string = @string output;
 print @string;
 /* FIN seleccionar un numero aleatorio con una semilla*/
+
+
+
+/* Enviar Mail SQL, previa configuracion de perfil */
+
+DROP TRIGGER IF EXISTS sendEmail_From_Inserted;
+GO
+CREATE TRIGGER sendEmail_From_Inserted ON dbo.envio_mail_alumno after INSERT
+AS BEGIN
+    
+    DECLARE @recipe varchar(500);
+    DECLARE @copy_to  varchar(500);
+	DECLARE @subject  varchar(500);
+	DECLARE @bodymail  varchar(max);
+
+    
+
+	select @recipe= cuenta_destino, @copy_to= cco, @subject = subject, @bodymail =  bodyHTML
+	from inserted
+
+	declare @imgArriba varchar(100) = '<img src='+'''https://miescuela.monicaherrera.edu.sv/img/arriba.jpg'''+' />'
+	declare @imgAbajo varchar(100) = '<img src='+'''https://miescuela.monicaherrera.edu.sv/img/abajo.jpg'''+' />'
+	declare @todoBody varchar(max);
+
+	set @todoBody = @imgArriba + @bodymail +@imgAbajo
+
+	EXEC msdb.dbo.sp_send_dbmail
+	@profile_name = 'Notificaciones', 
+	@recipients = @recipe, 
+	--@copy_recipients =@copy_to,             --For CC Email if exists
+	@blind_copy_recipients= @copy_to,      --For BCC Email if exists
+	@subject = @subject, 
+	@body = @todoBody,
+	@body_format='HTML',
+	@importance ='HIGH' --,
+	--@file_attachments='C:\Test.pdf';    
+	END;
